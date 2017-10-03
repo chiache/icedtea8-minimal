@@ -217,7 +217,9 @@ void PhaseMacroExpand::extract_call_projections(CallNode *call) {
 // Eliminate a card mark sequence.  p2x is a ConvP2XNode
 void PhaseMacroExpand::eliminate_card_mark(Node* p2x) {
   assert(p2x->Opcode() == Op_CastP2X, "ConvP2XNode required");
+#if INCLUDE_ALL_GCS
   if (!UseG1GC) {
+#endif
     // vanilla/CMS post barrier
     Node *shift = p2x->unique_out();
     Node *addp = shift->unique_out();
@@ -233,6 +235,7 @@ void PhaseMacroExpand::eliminate_card_mark(Node* p2x) {
       assert(mem->is_Store(), "store required");
       _igvn.replace_node(mem, mem->in(MemNode::Memory));
     }
+#if INCLUDE_ALL_GCS
   } else {
     // G1 pre/post barriers
     assert(p2x->outcnt() <= 2, "expects 1 or 2 users: Xor and URShift nodes");
@@ -303,6 +306,7 @@ void PhaseMacroExpand::eliminate_card_mark(Node* p2x) {
     assert(p2x->outcnt() == 0 || p2x->unique_out()->Opcode() == Op_URShiftX, "");
     _igvn.replace_node(p2x, top());
   }
+#endif
 }
 
 // Search for a memory operation for the specified memory slice.

@@ -520,6 +520,7 @@ void ConnectionGraph::add_node_to_connection_graph(Node *n, Unique_Node_List *de
           break;
         // Stored value escapes in unsafe access.
         if ((opcode == Op_StoreP) && (adr_type == TypeRawPtr::BOTTOM)) {
+#if INCLUDE_ALL_GCS
           // Pointer stores in G1 barriers looks like unsafe access.
           // Ignore such stores to be able scalar replace non-escaping
           // allocations.
@@ -542,6 +543,7 @@ void ConnectionGraph::add_node_to_connection_graph(Node *n, Unique_Node_List *de
               }
             }
           }
+#endif
           delayed_worklist->push(n); // Process unsafe access later.
           break;
         }

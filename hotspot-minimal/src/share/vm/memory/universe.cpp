@@ -937,7 +937,7 @@ ReservedSpace Universe::reserve_heap(size_t heap_size, size_t alignment) {
       || UseParallelGC
       || use_large_pages, "Wrong alignment to use large pages");
 
-  char* addr = Universe::preferred_heap_base(total_reserved, alignment, Universe::UnscaledNarrowOop);
+  char* addr = NULL; //Universe::preferred_heap_base(total_reserved, alignment, Universe::UnscaledNarrowOop);
 
   ReservedHeapSpace total_rs(total_reserved, alignment, use_large_pages, addr);
 
@@ -946,7 +946,7 @@ ReservedSpace Universe::reserve_heap(size_t heap_size, size_t alignment) {
       // Failed to reserve at specified address - the requested memory
       // region is taken already, for example, by 'java' launcher.
       // Try again to reserver heap higher.
-      addr = Universe::preferred_heap_base(total_reserved, alignment, Universe::ZeroBasedNarrowOop);
+      addr = NULL; // Universe::preferred_heap_base(total_reserved, alignment, Universe::ZeroBasedNarrowOop);
 
       ReservedHeapSpace total_rs0(total_reserved, alignment,
           use_large_pages, addr);

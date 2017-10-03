@@ -5061,6 +5061,7 @@ int os::active_processor_count() {
   int cpus_size = sizeof(cpu_set_t);
   int cpu_count = 0;
 
+#if 0
   // pid 0 means the current thread - which we have to assume represents the process
   if (sched_getaffinity(0, cpus_size, &cpus) == 0) {
     cpu_count = os_cpu_count(&cpus);
@@ -5073,6 +5074,7 @@ int os::active_processor_count() {
     warning("sched_getaffinity failed (%s)- using online processor count (%d) "
             "which may exceed available processors", strerror(errno), cpu_count);
   }
+#endif
 
   assert(cpu_count > 0 && cpu_count <= processor_count(), "sanity check");
   return cpu_count;

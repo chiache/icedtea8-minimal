@@ -75,6 +75,7 @@ ReservedSpace::ReservedSpace(size_t size, size_t alignment,
                              bool large,
                              char* requested_address,
                              const size_t noaccess_prefix) {
+  assert(requested_address == NULL, "requested address must be zero");
   initialize(size+noaccess_prefix, alignment, large, requested_address,
              noaccess_prefix, false);
 }
@@ -153,9 +154,7 @@ void ReservedSpace::initialize(size_t size, size_t alignment, bool large,
   }
 
   if (special) {
-
     base = os::reserve_memory_special(size, alignment, requested_address, executable);
-
     if (base != NULL) {
       if (failed_to_reserve_as_requested(base, requested_address, size, true)) {
         // OS ignored requested address. Try different address.

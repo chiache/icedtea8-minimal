@@ -4287,8 +4287,7 @@ JavaThread *Threads::owning_thread_from_monitor_owner(address owner, bool doLock
   // like deadlock detection.
   if (UseHeavyMonitors) return NULL;
 
-  //
-  // If we didn't find a matching Java thread and we didn't force use of
+  // // If we didn't find a matching Java thread and we didn't force use of
   // heavyweight monitors, then the owner is the stack address of the
   // Lock Word in the owning Java thread's stack.
   //

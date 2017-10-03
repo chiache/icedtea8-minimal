@@ -24,8 +24,10 @@
 
 #include "precompiled.hpp"
 #include "compiler/compileLog.hpp"
-#include "gc_implementation/g1/g1SATBCardTableModRefBS.hpp"
-#include "gc_implementation/g1/heapRegion.hpp"
+#if INCLUDE_ALL_GCS
+# include "gc_implementation/g1/g1SATBCardTableModRefBS.hpp"
+# include "gc_implementation/g1/heapRegion.hpp"
+#endif
 #include "gc_interface/collectedHeap.hpp"
 #include "memory/barrierSet.hpp"
 #include "memory/cardTableModRefBS.hpp"
@@ -1513,10 +1515,12 @@ void GraphKit::pre_barrier(bool do_load,
   BarrierSet* bs = Universe::heap()->barrier_set();
   set_control(ctl);
   switch (bs->kind()) {
+#if INCLUDE_ALL_GCS
     case BarrierSet::G1SATBCT:
     case BarrierSet::G1SATBCTLogging:
       g1_write_barrier_pre(do_load, obj, adr, adr_idx, val, val_type, pre_val, bt);
       break;
+#endif
 
     case BarrierSet::CardTableModRef:
     case BarrierSet::CardTableExtension:
@@ -1533,9 +1537,11 @@ void GraphKit::pre_barrier(bool do_load,
 bool GraphKit::can_move_pre_barrier() const {
   BarrierSet* bs = Universe::heap()->barrier_set();
   switch (bs->kind()) {
+#if INCLUDE_ALL_GCS
     case BarrierSet::G1SATBCT:
     case BarrierSet::G1SATBCTLogging:
       return true; // Can move it if no safepoint
+#endif
 
     case BarrierSet::CardTableModRef:
     case BarrierSet::CardTableExtension:
@@ -1560,10 +1566,12 @@ void GraphKit::post_barrier(Node* ctl,
   BarrierSet* bs = Universe::heap()->barrier_set();
   set_control(ctl);
   switch (bs->kind()) {
+#if INCLUDE_ALL_GCS
     case BarrierSet::G1SATBCT:
     case BarrierSet::G1SATBCTLogging:
       g1_write_barrier_post(store, obj, adr, adr_idx, val, bt, use_precise);
       break;
+#endif
 
     case BarrierSet::CardTableModRef:
     case BarrierSet::CardTableExtension:
@@ -3840,6 +3848,8 @@ void GraphKit::write_barrier_post(Node* oop_store,
   final_sync(ideal);
 }
 
+#if INCLUDE_ALL_GCS
+
 // G1 pre/post barriers
 void GraphKit::g1_write_barrier_pre(bool do_load,
                                     Node* obj,
@@ -4086,7 +4096,7 @@ void GraphKit::g1_write_barrier_post(Node* oop_store,
 }
 #undef __
 
-
+#endif /* INCLUDE_ALL_GCS */
 
 Node* GraphKit::load_String_offset(Node* ctrl, Node* str) {
   if (java_lang_String::has_offset_field()) {

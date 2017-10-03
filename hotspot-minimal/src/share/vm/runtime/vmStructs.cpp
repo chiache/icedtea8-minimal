@@ -255,6 +255,23 @@ typedef Hashtable<Klass*, mtClass>            KlassHashtable;
 typedef HashtableEntry<Klass*, mtClass>       KlassHashtableEntry;
 typedef TwoOopHashtable<Symbol*, mtClass>     SymbolTwoOopHashtable;
 
+#if INCLUDE_ALL_GCS
+# define VM_STRUCTS_GCS(nonstatic_field, \
+                        volatile_nonstatic_field) \
+
+  nonstatic_field(JavaThread,                  _satb_mark_queue,                              ObjPtrQueue)                           \
+  nonstatic_field(JavaThread,                  _dirty_card_queue,                             DirtyCardQueue)                        \
+  nonstatic_field(PtrQueue,                    _active,                                      bool)                                   \
+  nonstatic_field(PtrQueue,                    _buf,                                         void**)                                 \
+  nonstatic_field(PtrQueue,                    _index,                                       size_t)                                 \
+  volatile_nonstatic_field(FreeChunk,          _size,                                        size_t)                                 \
+  nonstatic_field(FreeChunk,                   _next,                                        FreeChunk*)                             \
+  nonstatic_field(FreeChunk,                   _prev,                                        FreeChunk*)                             \
+  nonstatic_field(AdaptiveFreeList<FreeChunk>, _size,                                        size_t)                                 \
+  nonstatic_field(AdaptiveFreeList<FreeChunk>, _count,                                       ssize_t)
+#endif
+
+
 //--------------------------------------------------------------------------------
 // VM_STRUCTS
 //
@@ -941,8 +958,6 @@ typedef TwoOopHashtable<Symbol*, mtClass>     SymbolTwoOopHashtable;
   nonstatic_field(JavaThread,                  _stack_size,                                   size_t)                                \
   nonstatic_field(JavaThread,                  _vframe_array_head,                            vframeArray*)                          \
   nonstatic_field(JavaThread,                  _vframe_array_last,                            vframeArray*)                          \
-  nonstatic_field(JavaThread,                  _satb_mark_queue,                              ObjPtrQueue)                           \
-  nonstatic_field(JavaThread,                  _dirty_card_queue,                             DirtyCardQueue)                        \
   nonstatic_field(Thread,                      _resource_area,                                ResourceArea*)                         \
   nonstatic_field(CompilerThread,              _env,                                          ciEnv*)                                \
                                                                                                                                      \
@@ -1286,19 +1301,11 @@ typedef TwoOopHashtable<Symbol*, mtClass>     SymbolTwoOopHashtable;
   nonstatic_field(vframeArrayElement,          _bci,                                         int)                                    \
   nonstatic_field(vframeArrayElement,          _method,                                      Method*)                                \
                                                                                                                                      \
-  nonstatic_field(PtrQueue,                    _active,                                      bool)                                   \
-  nonstatic_field(PtrQueue,                    _buf,                                         void**)                                 \
-  nonstatic_field(PtrQueue,                    _index,                                       size_t)                                 \
-                                                                                                                                     \
+                                                                                                                                    \
   nonstatic_field(AccessFlags,                 _flags,                                       jint)                                   \
   nonstatic_field(elapsedTimer,                _counter,                                     jlong)                                  \
   nonstatic_field(elapsedTimer,                _active,                                      bool)                                   \
-  nonstatic_field(InvocationCounter,           _counter,                                     unsigned int)                           \
-  volatile_nonstatic_field(FreeChunk,          _size,                                        size_t)                                 \
-  nonstatic_field(FreeChunk,                   _next,                                        FreeChunk*)                             \
-  nonstatic_field(FreeChunk,                   _prev,                                        FreeChunk*)                             \
-  nonstatic_field(AdaptiveFreeList<FreeChunk>, _size,                                        size_t)                                 \
-  nonstatic_field(AdaptiveFreeList<FreeChunk>, _count,                                       ssize_t)
+  nonstatic_field(InvocationCounter,           _counter,                                     unsigned int)
 
 
 //--------------------------------------------------------------------------------
@@ -1331,6 +1338,25 @@ typedef TwoOopHashtable<Symbol*, mtClass>     SymbolTwoOopHashtable;
 //
 // NOTE that there are platform-specific additions to this table in
 // vmStructs_<os>_<cpu>.hpp.
+
+#if INCLUDE_ALL_GCS
+#define VM_TYPES_GCS(declare_toplevel_type)                               \
+                                                                          \
+  declare_toplevel_type(ObjPtrQueue)                                      \
+  declare_toplevel_type(DirtyCardQueue)                                   \
+                                                                          \
+  /***************/                                                       \
+  /* Miscellaneous types */                                               \
+  /***************/                                                       \
+                                                                          \
+  declare_toplevel_type(PtrQueue)                                         \
+                                                                          \
+  /* freelist */                                                          \
+  declare_toplevel_type(FreeChunk*)                                       \
+  declare_toplevel_type(AdaptiveFreeList<FreeChunk>*)                     \
+  declare_toplevel_type(AdaptiveFreeList<FreeChunk>)
+#endif
+
 
 #define VM_TYPES(declare_type,                                            \
                  declare_toplevel_type,                                   \
@@ -1527,8 +1553,6 @@ typedef TwoOopHashtable<Symbol*, mtClass>     SymbolTwoOopHashtable;
   declare_toplevel_type(ThreadLocalAllocBuffer)                           \
   declare_toplevel_type(VirtualSpace)                                     \
   declare_toplevel_type(WaterMark)                                        \
-  declare_toplevel_type(ObjPtrQueue)                                      \
-  declare_toplevel_type(DirtyCardQueue)                                   \
                                                                           \
   /* Pointers to Garbage Collection types */                              \
                                                                           \
@@ -2162,18 +2186,7 @@ typedef TwoOopHashtable<Symbol*, mtClass>     SymbolTwoOopHashtable;
   declare_toplevel_type(os)                                               \
   declare_toplevel_type(vframeArray)                                      \
   declare_toplevel_type(vframeArrayElement)                               \
-  declare_toplevel_type(Annotations*)                                     \
-                                                                          \
-  /***************/                                                       \
-  /* Miscellaneous types */                                               \
-  /***************/                                                       \
-                                                                          \
-  declare_toplevel_type(PtrQueue)                                         \
-                                                                          \
-  /* freelist */                                                          \
-  declare_toplevel_type(FreeChunk*)                                       \
-  declare_toplevel_type(AdaptiveFreeList<FreeChunk>*)                     \
-  declare_toplevel_type(AdaptiveFreeList<FreeChunk>)
+  declare_toplevel_type(Annotations*)
 
 
 //--------------------------------------------------------------------------------
@@ -2913,6 +2926,9 @@ VMStructEntry VMStructs::localHotSpotVMStructs[] = {
 
   VM_STRUCTS_G1(GENERATE_NONSTATIC_VM_STRUCT_ENTRY,
                 GENERATE_STATIC_VM_STRUCT_ENTRY)
+
+  VM_STRUCTS_GCS(GENERATE_NONSTATIC_VM_STRUCT_ENTRY,
+                 GENERATE_NONSTATIC_VM_STRUCT_ENTRY)
 #endif // INCLUDE_ALL_GCS
 
 #if INCLUDE_TRACE
@@ -2963,6 +2979,8 @@ VMTypeEntry VMStructs::localHotSpotVMTypes[] = {
 
   VM_TYPES_G1(GENERATE_VM_TYPE_ENTRY,
               GENERATE_TOPLEVEL_VM_TYPE_ENTRY)
+
+  VM_TYPES_GCS(GENERATE_TOPLEVEL_VM_TYPE_ENTRY)
 #endif // INCLUDE_ALL_GCS
 
 #if INCLUDE_TRACE

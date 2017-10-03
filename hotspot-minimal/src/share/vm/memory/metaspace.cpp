@@ -3272,8 +3272,8 @@ void Metaspace::global_initialize() {
         allocate_metaspace_compressed_klass_ptrs(cds_end, cds_address);
 #endif
       } else {
-        char* base = (char*)align_ptr_up(Universe::heap()->reserved_region().end(), _reserve_alignment);
-        allocate_metaspace_compressed_klass_ptrs(base, 0);
+        //char* base = (char*)align_ptr_up(Universe::heap()->reserved_region().end(), _reserve_alignment);
+        allocate_metaspace_compressed_klass_ptrs(NULL, 0);
       }
     }
 #endif // _LP64

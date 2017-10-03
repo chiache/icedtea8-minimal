@@ -28,8 +28,8 @@
 #include "utilities/macros.hpp"
 #if INCLUDE_ALL_GCS
 #include "gc_implementation/shared/adaptiveSizePolicy.hpp"
-#include "gc_implementation/shared/gcPolicyCounters.hpp"
 #endif // INCLUDE_ALL_GCS
+#include "gc_implementation/shared/gcPolicyCounters.hpp"
 
 // This class keeps statistical information and computes the
 // size of the heap.
